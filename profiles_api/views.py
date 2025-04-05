@@ -5,8 +5,14 @@ from rest_framework.views import APIView
 # so when you call(django rest api) the api view it's expected to return this standard response object
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.authentication import TokenAuthentication
+from rest_framework import filters
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.settings import api_settings
 
 from profiles_api import serializers
+from profiles_api import models
+from profiles_api import permissions
 
 # import view sets
 from rest_framework import viewsets
@@ -101,3 +107,22 @@ class HelloViewSet(viewsets.ViewSet):
     def destroy(self, request, pk=None):
         """Hnadle removing an object"""
         return Response({'http_method': 'DELETE'})
+
+class UserProfileViewSet(viewsets.ModelViewSet):
+    """Handle creating and updating profiles"""
+    serializer_class = serializers.UserProfileSerializer
+    # if you provide a queryset Django can determine the name from the query set in the url.py router
+    queryset = models.UserProfile.objects.all()
+    # how the user would authentificate
+    authentication_classes = (TokenAuthentication,)
+    # how the user gets permission to do certain things, uses prmissions.py file
+    permission_classes = (permissions.UpdateOwnProfile,)
+    # search features
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name', 'email',)
+
+
+class UserLoginApiView(ObtainAuthToken):
+    """Handle creating user authentication tokens"""
+    # we need to make it visible to the Django ADMIN
+    renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES

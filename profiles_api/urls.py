@@ -6,10 +6,12 @@ from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 router.register('hello-viewset', views.HelloViewSet, base_name='hello-viewset')
+router.register('profile', views.UserProfileViewSet)
 
 urlpatterns = [
     # standard function used to convert our api class view to be renderedby our urls.
     path('hello-view/', views.HelloApiView.as_view()),
+    path('login/', views.UserLoginApiView.as_view()),
     # it figures out the urls that are required for all of the functions that we add to our view set
     # and then it generates this 'urls' list which we can pass in to using the path function and the include function
     # to our url patterns
