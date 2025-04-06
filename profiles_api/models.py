@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.models import BaseUserManager
+from django.conf import settings
 
 
 # Create your models here.
@@ -56,3 +57,20 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         """Return string representation of our user"""
         return self.email
+
+
+class ProfileFeedItem(models.Model):
+    """Profile statu supdate"""
+    # we use the foreign key field it sets up a foreign key relationship in the Database
+    # to a remote model, the benefit of this is that it allows you ensure that the integrity
+    # of the database is maintained
+    user_profile = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+    status_text = models.CharField(max_length=255)
+    created_on = models.DateTimeField(auto_now_add=True) # Auto adds time field for when created
+
+    def __str__(self):
+        """Return the model as a string"""
+        return self.status_text
